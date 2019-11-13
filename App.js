@@ -1,5 +1,5 @@
 import React, {useState, useReducer} from 'react';
-import {View, Text, Button} from 'react-native';
+import {View, Text, Alert, Button} from 'react-native';
 import styles from './visuals/styles';
 import ShowConfigButtons from './components/ConfigButton';
 import ShowBookingButtons from './components/BookingButton';
@@ -21,7 +21,7 @@ export default function App() {
           return bookableThingsArray;
       }
     },
-    allThings,
+    [],
   );
 
   const handleSelectionPress = input => {
@@ -33,23 +33,34 @@ export default function App() {
   };
 
   const handleConfigPress = () => {
-    setShowButtons(!showButtons);
+    setShowConfig(!showConfig);
     setShowInitial(false);
   };
 
+  // Works on both iOS and Android
+  const alertti = () => {
+    Alert.alert(
+      'No configuration found!',
+      'Start by creating a configuration.',
+      [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+      {cancelable: false},
+    );
+  };
+
   function InitialPage() {
+    alertti();
     return (
       <View style={styles.middleBox}>
-        <Text>INITIAL PAGE</Text>
+        <Text>CONFIGURATION IS NEEDED!</Text>
       </View>
     );
   }
 
   const getButtonTitle = () => {
-    if (showButtons) {
-      return 'Configuration';
-    } else {
+    if (showConfig) {
       return 'Booking';
+    } else {
+      return 'Configuration';
     }
   };
 
@@ -70,17 +81,17 @@ export default function App() {
       <View style={styles.middleBox}>
         {showInitial ? (
           <InitialPage />
-        ) : showButtons ? (
-          selectedThings.map((thing, index) => (
-            <ShowBookingButtons key={index} title={thing} />
-          ))
-        ) : (
+        ) : showConfig ? (
           allThings.map((thing, index) => (
             <ShowConfigButtons
               key={index}
               title={thing}
               handleConfigPress={handleSelectionPress}
             />
+          ))
+        ) : (
+          selectedThings.map((thing, index) => (
+            <ShowBookingButtons key={index} title={thing} />
           ))
         )}
       </View>

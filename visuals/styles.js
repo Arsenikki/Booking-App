@@ -25,6 +25,12 @@ const styles = StyleSheet.create({
     padding: 100,
     marginHorizontal: 20,
   },
+  buttonActive: {
+    alignItems: 'center',
+    backgroundColor: '#f0f',
+    padding: 100,
+    marginHorizontal: 20,
+  },
 });
 
 module.exports = styles;

@@ -10,7 +10,7 @@ export default function ShowBookingButtons({title}) {
   return (
     <View style={styles.middleBox}>
       <TouchableOpacity
-        onPress={() => handleBookingButtonPress(title)}
+        onPress={() => handleBookingButtonPress()}
         style={styles.button}>
         <Text> {title} </Text>
       </TouchableOpacity>

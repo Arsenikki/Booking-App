@@ -1,16 +1,14 @@
 import React, {useState, useReducer} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableHighlight,
-} from 'react-native';
-import {Button} from 'react-native-elements';
+import {View, Text, Button} from 'react-native';
+import styles from './visuals/styles';
+import ShowConfigButtons from './components/ConfigButton';
+import ShowBookingButtons from './components/BookingButton';
 
 export default function App() {
   const allThings = ['Sauna', 'laundry'];
+  const [showInitial, setShowInitial] = useState(true);
   const [showButtons, setShowButtons] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
   const [selectedThings, setSelectedThings] = useReducer(
     (bookableThingsArray, {type, value}) => {
       switch (type) {
@@ -18,47 +16,15 @@ export default function App() {
           return [...bookableThingsArray, value];
         case 'remove':
           var arr = bookableThingsArray.filter(item => item !== value);
-          console.log('arrr', arr);
           return arr;
         default:
           return bookableThingsArray;
       }
     },
-    [],
+    allThings,
   );
 
-  const styles = StyleSheet.create({
-    alternativeLayoutButtonContainer: {
-      margin: 20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    topBox: {
-      flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      backgroundColor: 'dimgrey',
-    },
-    middleBox: {
-      flex: 7,
-      flexDirection: 'column',
-      justifyContent: 'space-evenly',
-      backgroundColor: 'skyblue',
-      alignItems: 'center',
-    },
-    button: {
-      alignItems: 'center',
-      backgroundColor: '#DDDDDD',
-      padding: 100,
-      marginHorizontal: 20,
-    },
-  });
-
-  const handleOpenConfig = () => {
-    setShowButtons(!showButtons);
-  };
-
-  const handleConfigPress = input => {
+  const handleSelectionPress = input => {
     if (selectedThings.includes(input)) {
       setSelectedThings({type: 'remove', value: input});
     } else {
@@ -66,36 +32,25 @@ export default function App() {
     }
   };
 
-  function ShowBookingButtons(props) {
+  const handleConfigPress = () => {
+    setShowButtons(!showButtons);
+    setShowInitial(false);
+  };
+
+  function InitialPage() {
     return (
       <View style={styles.middleBox}>
-        <TouchableOpacity
-          onPress={() => alert(`You pressed ${props.title} button`)}
-          style={styles.button}>
-          <Text> {props.title} </Text>
-        </TouchableOpacity>
+        <Text>INITIAL PAGE</Text>
       </View>
     );
   }
 
-  function ShowConfigButtons(props) {
-    console.log('jajajaja', props);
-    return (
-      <View style={styles.middleBox}>
-        <TouchableOpacity
-          onPress={() => handleConfigPress(props.title)}
-          style={styles.button}>
-          <Text> {props.title} </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const showInitialPage = () => {
-    alert(
-      'You need to create initial configuration to proceed. Open configuration settings from top right corner.',
-    );
-    return <View style={styles.middleBox} />;
+  const getButtonTitle = () => {
+    if (showButtons) {
+      return 'Configuration';
+    } else {
+      return 'Booking';
+    }
   };
 
   return (
@@ -105,17 +60,29 @@ export default function App() {
           <Text style={{fontSize: 30, alignSelf: 'center'}}>
             online booking
           </Text>
-          <Button title="Configuration" onPress={() => handleOpenConfig()} />
+          <Button
+            title={getButtonTitle()}
+            onPress={() => handleConfigPress()}
+          />
         </View>
       </View>
+
       <View style={styles.middleBox}>
-        {showButtons
-          ? selectedThings.map((thing, index) => (
-              <ShowBookingButtons key={index} title={thing} />
-            ))
-          : allThings.map((thing, index) => (
-              <ShowConfigButtons key={index} title={thing} />
-            ))}
+        {showInitial ? (
+          <InitialPage />
+        ) : showButtons ? (
+          selectedThings.map((thing, index) => (
+            <ShowBookingButtons key={index} title={thing} />
+          ))
+        ) : (
+          allThings.map((thing, index) => (
+            <ShowConfigButtons
+              key={index}
+              title={thing}
+              handleConfigPress={handleSelectionPress}
+            />
+          ))
+        )}
       </View>
     </React.Fragment>
   );
